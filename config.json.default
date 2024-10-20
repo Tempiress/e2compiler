@@ -1,0 +1,21 @@
+{
+  "GradeService": {
+      "url": "http://r226-03.mmcs.rsu.ru/onboarding/api/grades/grade_assignment",
+      "token": "NNNNNNNNNNNNNNNNN",
+	  "token_var_name": "ASSIGNATOR_API_TOKEN"
+
+  },
+  "Discipline": {
+      "Subject": "CS311. Разработка компиляторов",
+      "Semester": 25
+  },
+  "Service": "gitlab",
+  "Projects": [  
+      { "namespace": "Tests",
+	    "tests": {
+		   "subModuleNumber": 1
+		}
+      }
+    ]
+}
+

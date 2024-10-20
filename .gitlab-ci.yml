@@ -1,0 +1,15 @@
+stages:
+  - build_test_report
+
+build_all:
+  stage: build_test_report
+  before_script:
+    - nuget restore
+    - msbuild TaskSolution.sln
+  script:  
+    - .\packages\NUnit.ConsoleRunner.3.17.0\tools\nunit3-console.exe Tests\bin\Debug\Tests.dll
+  after_script:
+    - .\NunitReport\bin\Debug\NunitReport.exe ${CI_PROJECT_DIR} ${GITLAB_USER_LOGIN}
+  tags:
+    - windows
+    - dotnet
