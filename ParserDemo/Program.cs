@@ -50,7 +50,14 @@ namespace SimpleLangParserTest
 
             TestParser t = new TestParser();
             //t.TestLoops();
-            t.TestConditionals0();
+            t.TestExpressions2();
+
+
+         
+
+
+
+
 
 
         }

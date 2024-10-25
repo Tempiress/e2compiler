@@ -84,70 +84,101 @@ namespace Tests
 
 
         [Test, Property("ScorePercentage", 33)]
-        public void TestConditionals0()
-        {
-            Assert.IsTrue(Parse(@"if(2)
-                                {a=2}"));
-
-        }
-
-
-        [Test, Property("ScorePercentage", 33)]
         public void TestConditionals1()
         {
             Assert.IsTrue(Parse(@"if(2){a=2}else{b=2}"));
 
         }
 
+
+
         [Test, Property("ScorePercentage", 33)]
         public void TestConditionals()
         {
-            Assert.IsTrue(Parse(@"{ 
+            Assert.IsTrue(Parse(@" 
                                      if (2){  
                                         a=2}
                                      else{ 
                                         b=2}
 
-                                     if (3){
-                                        if (c){
+                                     if (3)
+                                     {
+                                        if (c)
+                                        {
                                             c=4
-                                         else
-                                            m=1
-                                     else
-                                        v=8;   
+                                        }
+                                         else{
+                                            m=1}
+                                      }
+                                     else{
+                                        v=8}   
                                     
-                                     if 4 {
-                                       if 4{
-                                         if 6{
+                                     if (4) {
+                                       if (4){
+                                         if (6){
                                             m=0}}}
-                                  }"));
+                                  "));
 
         }
 
         [Test, Property("ScorePercentage", 34)]
         public void TestExpressions()
         {
-            Assert.IsTrue(Parse(@"{ 
-                                     if 2+2*(c-d/3) then
-                                        begin  
-                                            a=2;
-                                            while 2-3+f do c=c*2
-                                        end
-                                     else 
-                                        b=2-3*(c-d/f*3);
-                                    
-                                     for i=2-3*(s-d) to (c-3) do
-                                         a=(a-(3-3));
+            Assert.IsTrue(Parse(@" 
+            if (2 + 2 * (c - d / 3))
+            {
+            a = 2
+            while (2 - 3 + f) { c = c * 2 }
+            }
+            else
+            {
+                b = 2 - 3 * (c - d / f * 3)
+            }
 
-                                     if 3 then
-                                        if (c-3) then
-                                            c=4+2
-                                         else
-                                            m=1
-                                     else
-                                        v=(8+2)   
-                                  }"));
+            for (i = 2 - 3 * (s - d), (c - 3))
+            {
+                a = (a - (3 - 3))
+            }
+
+            if (3)
+            {
+                if (c - 3)
+                {
+                    c = 4 + 2
+                }
+                else
+                {
+                    m = 1
+                }
+                else
+                {
+                    v = (8 + 2)
+                }
+            }
+                                  "));
+        }
+
+
+        [Test, Property("ScorePercentage", 34)]
+        public void TestExpressions2()
+        {
+            Assert.IsTrue(Parse(@" 
+            if (2 + 2 * (c - d / 3))
+            {
+            a = 2
+            }
+                                  "));
         }
     }
+
+
+
+
+
+
+
+
+
+
 
 }

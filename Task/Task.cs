@@ -177,14 +177,18 @@ namespace SimpleParser
                     {
                         Block();
                     }
-                    if(l.LexKind != Tok.EOF)
-                    Statement();
-                    
-       
+                    else
+                    {
+                        SyntaxError("begin expected");
+                    }
+
+                    if (l.LexKind != Tok.EOF)
+                        Statement();                    
                 }
-                
-
-
+                if (l.LexKind == Tok.LEFT_BRACKET) 
+                {
+                    Block();
+                }
             }
         }
 
@@ -195,21 +199,15 @@ namespace SimpleParser
             {
                 Block();
             }
-            else
+            else 
             {
+                SyntaxError("begin expected");
+            }
+
+            if (l.LexKind != Tok.EOF)
                 Statement();
-            }
-            
-                
-            
-
-            if (l.LexKind == Tok.END) 
-            {
-                l.NextLexem();
-            }
-
-
         }
+
         public void ForStatement() 
         {
             l.NextLexem(); // Пропуск 'for'
@@ -241,8 +239,6 @@ namespace SimpleParser
             {
                 SyntaxError("'(' Not found");
             }
-
-
         }
 
         
@@ -260,9 +256,6 @@ namespace SimpleParser
         }
 
     }
-
-
-
 
 }
 
