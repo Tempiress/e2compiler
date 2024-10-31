@@ -17,7 +17,7 @@ namespace Tests
             TextReader inputReader = new StringReader(text);
             Lexer l = new Lexer(inputReader);
             Parser p = new Parser(l);
-            
+
             p.Progr();
             if (l.LexKind == Tok.EOF)
             {
@@ -31,7 +31,7 @@ namespace Tests
 
 
         [Test, Property("ScorePercentage", 33)]
-        public void TestMy() 
+        public void TestMy()
         {
             Assert.IsTrue(Parse(@"{while(true){}}"));
         }
@@ -44,7 +44,8 @@ namespace Tests
             Assert.IsTrue(Parse(@"{ 
                                      while (5){ 
                                        
-                                       a=2 
+                                       a=2
+                                       continue
                                      }
                                   }"));
 
@@ -52,7 +53,7 @@ namespace Tests
                                     while(6){
                                     b = 4 
                                     while(2){a = 5}}}}"));
-            
+
             //Assert.IsTrue(Parse(@"{while (5){                                      
             //                           while (6){ 
             //                            a=2 
@@ -65,7 +66,7 @@ namespace Tests
 
             //Assert.IsTrue(Parse(@"{ 
             //                         for (a = 1, 5, 1){ 
-                                      
+
             //                           b=1
             //                         }
             //                      }"));
@@ -128,6 +129,7 @@ namespace Tests
             if (2 + 2 * (c - d / 3))
             {
             a = 2
+            
             while (2 - 3 + f) { c = c * 2 }
             }
             else
@@ -158,6 +160,14 @@ namespace Tests
                                   "));
         }
 
+        [Test, Property("ScorePercentage", 34)]
+        public void TestExpressions3()
+        {
+            Assert.IsTrue(Parse(@" 
+            continue
+            break
+                                  "));
+        }
 
         [Test, Property("ScorePercentage", 34)]
         public void TestExpressions2()
@@ -166,18 +176,89 @@ namespace Tests
             if (2 + 2 * (c - d / 3))
             {
             a = 2
+
             }
+            c = 4
+            
+            m = 1
                                   "));
         }
+
+        [Test, Property("ScorePercentage", 34)]
+        public void TestFor()
+        {
+            Assert.IsTrue(Parse(@" 
+            for (i = 2 - 3 * (s - d), (c - 3))
+            {
+                a = (a - (3 - 3))
+                break
+            }
+
+            a = 1
+            
+            if(2){ c = 0}
+                                  "));
+        }
+
+
+        [Test, Property("ScorePercentage", 34)]
+        public void TestExpressions4()
+        {
+            Assert.IsTrue(Parse(@" 
+            if (2 + 2 * (c - d / 3))
+            {
+            a = 2
+            
+            while (2 - 3 + f) { c = c * 2 }
+            }
+            else
+            {
+                b = 2 - 3 * (c - d / f * 3)
+            }
+
+            for (i = 2 - 3 * (s - d), (c - 3))
+            {
+                a = (a - (3 - 3))
+            }
+
+            if (3)
+            {
+                a = 3
+            }
+                        "));
+
+        }
+
+
+        [Test, Property("ScorePercentage", 34)]
+        public void TestExpressionstryCatch()
+        {
+            Assert.IsTrue(Parse(@" 
+            try{
+                a = 4
+            }catch(e){
+                            
+            }
+            
+            
+                        "));
+
+        }
+
+
+        [Test, Property("ScorePercentage", 34)]
+        public void TestPrint()
+        {
+            Assert.IsTrue(Parse(@" 
+            print(abg)
+            print(x + y * (z - 3))
+                        
+                        "));
+
+        }
+
+
     }
-
-
-
-
-
-
-
-
 
 
 

@@ -125,7 +125,7 @@ namespace SimpleLexer
             keywordsMap["return"] = Tok.RETURN;
             keywordsMap["while"] = Tok.WHILE;
             keywordsMap["for"] = Tok.FOR;
-            keywordsMap["coninue"] = Tok.CONTINUE;
+            keywordsMap["continue"] = Tok.CONTINUE;
             keywordsMap["swith"] = Tok.SWITCH;
             keywordsMap["try"] = Tok.TRY;
             keywordsMap["catch"] = Tok.CATCH;

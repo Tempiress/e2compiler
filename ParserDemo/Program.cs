@@ -50,7 +50,7 @@ namespace SimpleLangParserTest
 
             TestParser t = new TestParser();
             //t.TestLoops();
-            t.TestExpressions2();
+            t.TestExpressionstryCatch();
 
 
          

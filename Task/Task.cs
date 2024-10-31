@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Text;
 using SimpleLexer;
@@ -25,19 +26,41 @@ namespace SimpleParser
 
         public void Progr()
         {
-            Statement();
+            StatementList();
         }
 
         public void Expr()
         {
-            if (l.LexKind == Tok.ID || l.LexKind == Tok.INUM)
+            if (l.LexKind == Tok.LEFT_BRACKET)
             {
                 l.NextLexem();
+                Expr();
+
+                if (l.LexKind == Tok.RIGHT_BRACKET)
+                {
+                    l.NextLexem();
+                }
+                else
+                {
+                    SyntaxError("')' expected");
+                }
             }
-            else
+
+            else if (l.LexKind == Tok.ID || l.LexKind == Tok.INUM)
+            {
+                l.NextLexem();
+
+                while (l.LexKind == Tok.PLUS || l.LexKind == Tok.MINUS || l.LexKind == Tok.MULT || l.LexKind == Tok.DIVISION)
+                {
+                    l.NextLexem();
+                    Expr();
+                }
+            }
+            else 
             {
                 SyntaxError("expression expected");
             }
+
         }
 
         public void Assign()
@@ -57,10 +80,10 @@ namespace SimpleParser
 
         public void StatementList()
         {
-            Statement();
-            while (l.LexKind == Tok.SEMICOLON)
+           
+            while (l.LexKind != Tok.EOF && l.LexKind != Tok.END)
             {
-                l.NextLexem();
+                
                 Statement();
             }
         }
@@ -104,6 +127,19 @@ namespace SimpleParser
                         elseStatement();
                         break;
                     }
+                case Tok.BREAK:
+                case Tok.CONTINUE:
+                    LoopControlStatement();
+                    break;
+                case Tok.TRY:
+                    tryStatement();
+                    break;
+                case Tok.CATCH:
+                    catchStatement();
+                    break;
+                case Tok.PRINT:
+                    printStatement();
+                    break;
 
                 default:
                     {
@@ -115,15 +151,18 @@ namespace SimpleParser
 
         public void Block()
         {
-            l.NextLexem();    // пропуск begin
-            StatementList();
-            if (l.LexKind == Tok.END)
+            if (l.LexKind == Tok.BEGIN)
             {
-                l.NextLexem();
+                l.NextLexem();    // пропуск begin
+                StatementList();
+                if (l.LexKind == Tok.END)
+                {
+                    l.NextLexem();
+                }
             }
-            else
+            else 
             {
-                SyntaxError("end expected");
+                Statement(); // один оператор
             }
 
         }
@@ -158,37 +197,41 @@ namespace SimpleParser
             {
                 SyntaxError("'(' Not found");
             }
-
         }
 
         public void ifStatement() 
         {
 
             l.NextLexem(); //Пропуск 'if'
-            if (l.LexKind == Tok.LEFT_BRACKET) 
+            if (l.LexKind == Tok.LEFT_BRACKET)
             {
                 l.NextLexem(); // Пропуск '('
-                Expr();
 
-                if (l.LexKind == Tok.RIGHT_BRACKET) 
+                while (l.LexKind != Tok.RIGHT_BRACKET)
+                {
+
+                    if (l.LexKind == Tok.RIGHT_BRACKET)
+                    {
+                        ifStatement();
+                    }
+                    else
+                    {
+                        Expr();
+                    }
+
+                }
+
+                if (l.LexKind == Tok.RIGHT_BRACKET)
                 {
                     l.NextLexem();
                     if (l.LexKind == Tok.BEGIN)
                     {
                         Block();
                     }
-                    else
-                    {
-                        SyntaxError("begin expected");
-                    }
+                }
+                
+                   StatementList();
 
-                    if (l.LexKind != Tok.EOF)
-                        Statement();                    
-                }
-                if (l.LexKind == Tok.LEFT_BRACKET) 
-                {
-                    Block();
-                }
             }
         }
 
@@ -203,9 +246,8 @@ namespace SimpleParser
             {
                 SyntaxError("begin expected");
             }
-
-            if (l.LexKind != Tok.EOF)
-                Statement();
+          
+            StatementList();
         }
 
         public void ForStatement() 
@@ -220,11 +262,25 @@ namespace SimpleParser
                 {
                     l.NextLexem();// Пропуск ','
                     Expr();
+
+                    if (l.LexKind == Tok.COMMA) 
+                    {
+                        l.NextLexem();
+                        Expr();
+                    }
+
                     if (l.LexKind == Tok.RIGHT_BRACKET)
                     {
                         l.NextLexem(); // Пропуск ')'
-                        Statement(); // Разбор тела цикла                        
+
+                        if (l.LexKind == Tok.BEGIN) 
+                        {
+                            Block();
+                        }
+                       
+                        StatementList();                                                                    
                     }
+
                     else
                     {
                         SyntaxError("')' Not found");
@@ -241,7 +297,87 @@ namespace SimpleParser
             }
         }
 
-        
+        public void LoopControlStatement() 
+        {
+            if (l.LexKind == Tok.BREAK || l.LexKind == Tok.CONTINUE)
+            {
+                l.NextLexem();
+
+            }
+            else 
+            {
+                SyntaxError("'break' or 'continue' expected");
+            }
+        }
+
+        public void printStatement()
+        {
+            l.NextLexem();  
+
+            if (l.LexKind == Tok.LEFT_BRACKET)
+            {
+                l.NextLexem(); 
+
+                Expr();  // Разбор аргумента для print
+
+                if (l.LexKind == Tok.RIGHT_BRACKET)
+                {
+                    l.NextLexem();  
+                }
+                else
+                {
+                    SyntaxError("')' expected after print argument");
+                }
+            }
+            else
+            {
+                SyntaxError("'(' expected after print");
+            }
+        }
+
+        public void tryStatement() 
+        {
+            if (l.LexKind == Tok.TRY) 
+            {
+                l.NextLexem();
+
+                if (l.LexKind == Tok.BEGIN) 
+                {
+                    Block();
+                }
+            }
+            else
+            {
+                SyntaxError("try expected");
+            }
+        }
+
+        public void catchStatement() 
+        {
+            if (l.LexKind == Tok.CATCH)
+            {
+                l.NextLexem();
+                if (l.LexKind == Tok.LEFT_BRACKET)
+                {
+                    Expr();
+                }
+                if (l.LexKind == Tok.RIGHT_BRACKET)
+                {
+                    l.NextLexem();
+                    if (l.LexKind == Tok.BEGIN)
+                    {
+                        Block();
+                    }
+                }
+            }
+            else 
+            {
+                SyntaxError("catch expected");
+            }
+        }
+
+
+
 
         public void SyntaxError(string message)
         {
